@@ -3,7 +3,7 @@ Advanced Traffic Light System using Arduino
 
 This project demonstrates the design and implementation of an advanced traffic light control system using Arduino. It was developed step-by-step, starting from a basic traffic signal and gradually integrating more complex features such as pedestrian control, timers, and sensor-based automation.
 
-Project Overview
+**Project Overview**
 
 The goal of this project is to simulate a real-world traffic management system by combining hardware components and embedded programming. Each task builds upon the previous one, increasing functionality and system complexity.
 
