@@ -66,7 +66,8 @@ Multi-controller communication
 
 Real-time system simulation
 
-Future Improvements
+**Future Improvements**
+
 Add vehicle detection sensors
 Implement adaptive traffic timing
 Use LCD or OLED display for better visualization
