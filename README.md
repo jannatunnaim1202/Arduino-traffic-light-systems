@@ -1,5 +1,5 @@
 # Arduino-traffic-light-systems
-Advanced Traffic Light System using Arduino
+**Advanced Traffic Light System using Arduino**
 
 This project demonstrates the design and implementation of an advanced traffic light control system using Arduino. It was developed step-by-step, starting from a basic traffic signal and gradually integrating more complex features such as pedestrian control, timers, and sensor-based automation.
 
@@ -7,7 +7,7 @@ This project demonstrates the design and implementation of an advanced traffic l
 
 The goal of this project is to simulate a real-world traffic management system by combining hardware components and embedded programming. Each task builds upon the previous one, increasing functionality and system complexity.
 
-Features & Tasks
+**Features & Tasks**
 
 Task 1: Basic Traffic Light System
 
@@ -39,7 +39,7 @@ Task 7: IR Sensor Automation
 Replaced push button with an IR sensor
 Automatically detects pedestrians and triggers crossing signal
 
-Components Used
+**Components Used**
 Arduino Uno 
 LEDs (Red, Yellow, Green)
 Resistors
@@ -48,7 +48,7 @@ Push Button
 IR Sensor
 Breadboard & Jumper Wires
 
-Key Learning Outcomes
+**Key Learning Outcomes**
 Embedded systems design using Arduino
 Digital input/output control
 Sensor integration and automation
