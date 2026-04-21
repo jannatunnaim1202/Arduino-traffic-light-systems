@@ -1,0 +1,156 @@
+int cG = 2;  // Car Green
+int cY = 3;  // Car Yellow
+int cR = 4;  // Car Red
+int pG = 5;  // Pedestrian Green
+int pR = 6;  // Pedestrian Red
+int button = 7;
+
+// --- Declare the state type FIRST ---
+enum State {
+  CAR_GREEN,
+  CAR_YELLOW,
+  CAR_RED,
+  PED_GREEN,
+  PED_RED
+};
+
+// --- Function prototype ---
+void setLights(State s);
+
+State state = CAR_GREEN;
+bool buttonPressed = false;
+
+unsigned long previousMillis = 0;
+unsigned long interval = 0;
+
+int lastButtonState = HIGH;
+unsigned long lastDebounceTime = 0;
+const unsigned long debounceDelay = 50;
+
+void setup() {
+  pinMode(cG, OUTPUT);
+  pinMode(cY, OUTPUT);
+  pinMode(cR, OUTPUT);
+  pinMode(pG, OUTPUT);
+  pinMode(pR, OUTPUT);
+  pinMode(button, INPUT); // Button connected to GND
+
+  // Initial state
+  setLights(CAR_GREEN);
+}
+
+void loop() {
+  handleButton();
+
+  unsigned long currentMillis = millis();
+
+  switch (state) {
+    case CAR_GREEN:
+      if (currentMillis - previousMillis >= 5000 || buttonPressed) {
+        buttonPressed = false;
+        state = CAR_YELLOW;
+        previousMillis = currentMillis;
+        setLights(CAR_YELLOW);
+        interval = 500;
+      }
+      break;
+
+    case CAR_YELLOW:
+      if (currentMillis - previousMillis >= interval) {
+        state = CAR_RED;
+        previousMillis = currentMillis;
+        setLights(CAR_RED);
+        interval = 500;
+      }
+      break;
+
+    case CAR_RED:
+      if (currentMillis - previousMillis >= interval) {
+        state = PED_GREEN;
+        previousMillis = currentMillis;
+        setLights(PED_GREEN);
+        interval = 5000;
+      }
+      break;
+
+    case PED_GREEN:
+      if (currentMillis - previousMillis >= interval) {
+        state = PED_RED;
+        previousMillis = currentMillis;
+        setLights(PED_RED);
+        interval = 5000;
+      }
+      break;
+
+    case PED_RED:
+      if (currentMillis - previousMillis <= interval) {
+        state = CAR_GREEN;
+        previousMillis = currentMillis;
+        setLights(CAR_GREEN);
+        interval = 5000;
+      }
+      break;
+  }
+}
+
+void handleButton() {
+  int reading = digitalRead(button);
+
+  if (reading != lastButtonState) {
+    lastDebounceTime = millis();
+  }
+
+  if ((millis() - lastDebounceTime) < debounceDelay) {
+    if (reading == LOW && lastButtonState == HIGH) {
+      if (state == CAR_GREEN) {
+        buttonPressed = true;
+      }
+    }
+  }
+
+  lastButtonState = reading;
+}
+
+void setLights(State s) {
+  switch (s) {
+    case CAR_GREEN:
+      digitalWrite(cG, HIGH);
+      digitalWrite(cY, LOW);
+      digitalWrite(cR, LOW);
+      digitalWrite(pG, LOW);
+      digitalWrite(pR, HIGH);
+      break;
+
+    case CAR_YELLOW:
+      digitalWrite(cG, LOW);
+      digitalWrite(cY, HIGH);
+      digitalWrite(cR, LOW);
+      digitalWrite(pG, LOW);
+      digitalWrite(pR, HIGH);
+      break;
+
+    case CAR_RED:
+      digitalWrite(cG, LOW);
+      digitalWrite(cY, LOW);
+      digitalWrite(cR, HIGH);
+      digitalWrite(pG, LOW);
+      digitalWrite(pR, HIGH);
+      break;
+
+    case PED_GREEN:
+      digitalWrite(cG, LOW);
+      digitalWrite(cY, LOW);
+      digitalWrite(cR, HIGH);
+      digitalWrite(pG, HIGH);
+      digitalWrite(pR, LOW);
+      break;
+
+    case PED_RED:
+      digitalWrite(cG, HIGH);
+      digitalWrite(cY, LOW);
+      digitalWrite(cR, LOW);
+      digitalWrite(pG, LOW);
+      digitalWrite(pR, HIGH);
+      break;
+  }
+}
