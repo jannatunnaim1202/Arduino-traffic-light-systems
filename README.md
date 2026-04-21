@@ -40,20 +40,32 @@ Replaced push button with an IR sensor
 Automatically detects pedestrians and triggers crossing signal
 
 **Components Used**
+
 Arduino Uno 
+
 LEDs (Red, Yellow, Green)
 Resistors
+
 Push Button
+
 7-Segment Display
+
 IR Sensor
+
 Breadboard & Jumper Wires
 
 **Key Learning Outcomes**
+
 Embedded systems design using Arduino
+
 Digital input/output control
+
 Sensor integration and automation
+
 Multi-controller communication
+
 Real-time system simulation
+
 Future Improvements
 Add vehicle detection sensors
 Implement adaptive traffic timing
