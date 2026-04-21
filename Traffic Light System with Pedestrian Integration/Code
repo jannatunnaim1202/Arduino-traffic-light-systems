@@ -1,0 +1,70 @@
+int cG = 2;  // Car Green
+int cY = 3;  // Car Yellow
+int cR = 4;  // Car Red
+int pG = 5;  // Pedestrian Green
+int pR = 6;  // Pedestrian Red
+
+int step = 0; 
+
+void setup() {
+  pinMode(cG, OUTPUT);
+  pinMode(cY, OUTPUT);
+  pinMode(cR, OUTPUT);
+  pinMode(pG, OUTPUT);
+  pinMode(pR, OUTPUT);
+}
+
+void loop() {
+  switch(step) {
+
+    case 0: // Car Green, Pedestrian Red
+      digitalWrite(cG, HIGH);
+      digitalWrite(cY, LOW);
+      digitalWrite(cR, LOW);
+      digitalWrite(pG, LOW);
+      digitalWrite(pR, HIGH);
+      delay(5000);
+      step = 1;
+      break;
+
+    case 1: // Car Yellow, Pedestrian Red
+      digitalWrite(cG, LOW);
+      digitalWrite(cY, HIGH);
+      digitalWrite(cR, LOW);
+      digitalWrite(pG, LOW);
+      digitalWrite(pR, HIGH);
+      delay(1500);
+      step = 2;
+      break;
+
+    case 2: // Car Red, Pedestrian Red
+      digitalWrite(cG, LOW);
+      digitalWrite(cY, LOW);
+      digitalWrite(cR, HIGH);
+      digitalWrite(pG, LOW);
+      digitalWrite(pR, HIGH);
+      delay(1000);
+      step = 3;
+      break;
+
+    case 3: // Car Red, Pedestrian Green
+      digitalWrite(cG, LOW);
+      digitalWrite(cY, LOW);
+      digitalWrite(cR, HIGH);
+      digitalWrite(pG, HIGH);
+      digitalWrite(pR, LOW);
+      delay(5000);
+      step = 4;
+      break;
+
+    case 4: // Car Red, Pedestrian Red
+      digitalWrite(cG, LOW);
+      digitalWrite(cY, LOW);
+      digitalWrite(cR, HIGH);
+      digitalWrite(pG, LOW);
+      digitalWrite(pR, HIGH);
+      delay(1000);
+      step = 0; // Loop back to start
+      break;
+  }
+}
