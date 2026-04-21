@@ -1,0 +1,195 @@
+int cG = 0;  // Car Green
+int cY = 1;  // Car Yellow
+int cR = 2;  // Car Red
+int pG = 3;  // Pedestrian Green
+int pR = 4;  // Pedestrian Red
+int button = 5;
+int i;
+byte current;
+// --- Declare the state type FIRST ---
+enum State {
+  CAR_GREEN,
+  CAR_YELLOW,
+  CAR_RED,
+  PED_GREEN,
+  PED_RED
+};
+
+// --- Function prototype ---
+void setLights(State s);
+
+State state = CAR_GREEN;
+bool buttonPressed = false;
+
+unsigned long previousMillis = 0;
+unsigned long interval = 0;
+
+int lastButtonState = HIGH;
+unsigned long lastDebounceTime = 0;
+const unsigned long debounceDelay = 50;
+
+void setup() {
+  pinMode(cG, OUTPUT);
+  pinMode(cY, OUTPUT);
+  pinMode(cR, OUTPUT);
+  pinMode(pG, OUTPUT);
+  pinMode(pR, OUTPUT);
+  pinMode(button, INPUT); // Button connected to GND
+   
+  for (int i = 6; i < 13; i++) {
+    pinMode(i, OUTPUT);
+  }
+  // Initial state
+  setLights(CAR_GREEN);
+}
+
+void loop() {
+  handleButton();
+
+  unsigned long currentMillis = millis();
+  switch(state)
+  {
+   case CAR_GREEN:
+      if (currentMillis - previousMillis >= 5000 || buttonPressed) {
+        buttonPressed = false;
+        state = CAR_YELLOW;
+        previousMillis = currentMillis;
+        setLights(CAR_YELLOW);
+        interval = 500;
+      }
+      break;
+
+    case CAR_YELLOW:
+      if (currentMillis - previousMillis >= interval) {
+        state = CAR_RED;
+        previousMillis = currentMillis;
+        setLights(CAR_RED);
+        interval = 500;
+      }
+      break;
+
+    case CAR_RED:
+      if (currentMillis - previousMillis >= interval) {
+        state = PED_GREEN;
+        previousMillis = currentMillis;
+        setLights(PED_GREEN);
+        interval = 5000;
+      }
+      break;
+
+    case PED_GREEN:
+      if (currentMillis - previousMillis >= interval) {
+        state = PED_RED;
+        previousMillis = currentMillis;
+        setLights(PED_RED);
+        interval = 5000;
+      }
+      break;
+
+    case PED_RED:
+      if (currentMillis - previousMillis <= interval) {
+        state = CAR_GREEN;
+        previousMillis = currentMillis;
+        setLights(CAR_GREEN);
+        interval = 5000;
+      }
+      break;
+  }
+    //7segment
+    for (int i = 0; i <= 9; i++) {
+      if(state==PED_GREEN){
+    showDigit(i);
+    delay(1000);
+      }
+      else
+      {
+        showDigit(0);
+      }
+    }
+}
+
+void handleButton() {
+  int reading = digitalRead(button);
+
+  if (reading != lastButtonState) {
+    lastDebounceTime = millis();
+  }
+
+  if ((millis() - lastDebounceTime) < debounceDelay) {
+    if (reading == LOW && lastButtonState == HIGH) {
+      if (state == CAR_GREEN) {
+        buttonPressed = true;
+      }
+    }
+  }
+
+  lastButtonState = reading;
+}
+
+void setLights(State s) {
+  switch (s) {
+    case CAR_GREEN:
+      digitalWrite(cG, HIGH);
+      digitalWrite(cY, LOW);
+      digitalWrite(cR, LOW);
+      digitalWrite(pG, LOW);
+      digitalWrite(pR, HIGH);
+      break;
+
+    case CAR_YELLOW:
+      digitalWrite(cG, LOW);
+      digitalWrite(cY, HIGH);
+      digitalWrite(cR, LOW);
+      digitalWrite(pG, LOW);
+      digitalWrite(pR, HIGH);
+      break;
+
+    case CAR_RED:
+      digitalWrite(cG, LOW);
+      digitalWrite(cY, LOW);
+      digitalWrite(cR, HIGH);
+      digitalWrite(pG, HIGH);
+      digitalWrite(pR, LOW);
+      break;
+
+    case PED_GREEN:
+      digitalWrite(cG, LOW);
+      digitalWrite(cY, LOW);
+      digitalWrite(cR, HIGH);
+      digitalWrite(pG, HIGH);
+      digitalWrite(pR, LOW);
+      break;
+
+    case PED_RED:
+      digitalWrite(cG, LOW);
+      digitalWrite(cY, LOW);
+      digitalWrite(cR, HIGH);
+      digitalWrite(pG, LOW);
+      digitalWrite(pR, HIGH);
+      break;
+  }
+}
+
+
+void showDigit(int digit) {
+  byte current;
+
+  switch (digit) {
+    case 0: current = 0b0111111; break;
+    case 1: current = 0b0000110; break;
+    case 2: current = 0b1011011; break;
+    case 3: current = 0b1001111; break;
+    case 4: current = 0b1100110; break;
+    case 5: current = 0b1101101; break;
+    case 6: current = 0b1111101; break;
+    case 7: current = 0b0000111; break;
+    case 8: current = 0b1111111; break;
+    case 9: current = 0b1101111; break;
+    default: current = 0b0000000; break; // Turn off all segments for invalid input
+  }
+
+  for (int i = 6; i < 13; i++) {
+    digitalWrite(i, current & 1);
+    current >>= 1;
+  }
+}
