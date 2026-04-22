@@ -1,0 +1,44 @@
+//Arduino 2
+
+
+
+const int pedGreen = 6;
+const int pedRed = 7;
+
+enum State {PEDESTRIAN_RED, PEDESTRIAN_GREEN};
+State pedState = PEDESTRIAN_RED;
+
+void setup() {
+  Serial.begin(9600); // Communication with Car Arduino
+
+  pinMode(pedGreen, OUTPUT);
+  pinMode(pedRed, OUTPUT);
+
+  digitalWrite(pedRed, HIGH);
+ 
+}
+
+void loop() {
+  switch(pedState) {
+case PEDESTRIAN_RED:
+  if (Serial.available() > 0) {
+    char incoming = Serial.read();
+    if (incoming == 'W') {
+      digitalWrite(pedRed, LOW);
+      digitalWrite(pedGreen, HIGH);
+      pedState = PEDESTRIAN_GREEN;
+    }
+  }
+  break;
+
+    
+
+    case PEDESTRIAN_GREEN:
+      delay(5000); // Walk duration
+      digitalWrite(pedGreen, LOW);
+      digitalWrite(pedRed, HIGH);
+      Serial.write('D'); // Tell car Arduino pedestrian is done
+      pedState = PEDESTRIAN_RED;
+      break;
+  }
+}
