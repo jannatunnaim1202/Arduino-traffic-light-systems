@@ -1,0 +1,57 @@
+//Arduino 1
+
+
+
+const int carGreen = 2;
+const int carYellow = 3;
+const int carRed = 4;
+
+enum State {CAR_GREEN, CAR_YELLOW, CAR_RED, WAIT_PEDESTRIAN};
+State currentState = CAR_GREEN;
+
+void setup() {
+  Serial.begin(9600); // Communication with pedestrian Arduino
+
+  pinMode(carGreen, OUTPUT);
+  pinMode(carYellow, OUTPUT);
+  pinMode(carRed, OUTPUT);
+
+  digitalWrite(carGreen, HIGH);
+  digitalWrite(carYellow, LOW);
+  digitalWrite(carRed, LOW);
+}
+
+void loop() {
+  switch(currentState) {
+    case CAR_GREEN:
+      delay(5000);
+      currentState = CAR_YELLOW;
+      break;
+
+    case CAR_YELLOW:
+      digitalWrite(carGreen, LOW);
+      digitalWrite(carYellow, HIGH);
+      delay(1500);
+      currentState = CAR_RED;
+      break;
+
+    case CAR_RED:
+      digitalWrite(carYellow, LOW);
+      digitalWrite(carRed, HIGH);
+      currentState = WAIT_PEDESTRIAN;
+      Serial.write('W'); // Tell pedestrian Arduino to walk
+      break;
+
+  case WAIT_PEDESTRIAN:
+  if (Serial.available() > 0) {
+    char msg = Serial.read();
+    if (msg == 'D') {
+      digitalWrite(carRed, LOW);
+      digitalWrite(carGreen, HIGH);
+      currentState = CAR_GREEN;
+    }
+  }
+  break;
+
+}
+}
