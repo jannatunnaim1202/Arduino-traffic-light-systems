@@ -34,6 +34,7 @@ Implemented traffic light system using two Arduino boards Established communicat
 Replaced push button with an IR sensor Automatically detects pedestrians and triggers crossing signal
 
 **Components Used**
+
 •	Arduino Uno
 
 •	LEDs (Red, Yellow, Green) Resistors
