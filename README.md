@@ -34,7 +34,7 @@ Task 5: Dual Arduino Communication
 Implemented traffic light system using two Arduino boards
 Established communication between controllers for synchronized operation
 
-Task 7: IR Sensor Automation
+Task 6: IR Sensor Automation
 
 Replaced push button with an IR sensor
 Automatically detects pedestrians and triggers crossing signal
