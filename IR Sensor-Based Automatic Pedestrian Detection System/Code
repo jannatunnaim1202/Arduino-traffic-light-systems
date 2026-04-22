@@ -1,0 +1,172 @@
+int cG = 2;  // Car Green
+int cY = 3;  // Car Yellow
+int cR = 4;  // Car Red
+int pG = 5;  // Pedestrian Green
+int pR = 6;  // Pedestrian Red
+
+// Ultrasonic sensor pins
+int trigPin = 8;
+int echoPin = 9;
+
+// --- Declare the state type FIRST ---
+enum State {
+  CAR_GREEN,
+  CAR_YELLOW,
+  CAR_RED,
+  PED_GREEN,
+  PED_RED
+};
+
+// --- Function prototype ---
+void setLights(State s);
+
+State state = CAR_GREEN;
+bool pedestrianRequest = false;
+
+unsigned long previousMillis = 0;
+unsigned long interval = 0;
+
+#define DETECT_DISTANCE 15  // cm
+
+void setup() {
+  pinMode(cG, OUTPUT);
+  pinMode(cY, OUTPUT);
+  pinMode(cR, OUTPUT);
+  pinMode(pG, OUTPUT);
+  pinMode(pR, OUTPUT);
+
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  Serial.begin(115200);
+
+  // Initial state
+  setLights(CAR_GREEN);
+}
+
+void loop() {
+
+  checkUltrasonic();
+
+  unsigned long currentMillis = millis();
+
+  switch (state) {
+    case CAR_GREEN:
+      if (currentMillis - previousMillis >= 5000 || pedestrianRequest) {
+        pedestrianRequest = false;
+        state = CAR_YELLOW;
+        previousMillis = currentMillis;
+        setLights(CAR_YELLOW);
+        interval = 1000;
+      }
+      break;
+
+    case CAR_YELLOW:
+      if (currentMillis - previousMillis >= interval) {
+        state = CAR_RED;
+        previousMillis = currentMillis;
+        setLights(CAR_RED);
+        interval = 1000;
+      }
+      break;
+
+    case CAR_RED:
+      if (currentMillis - previousMillis <= interval) {
+        state = PED_GREEN;
+        previousMillis = currentMillis;
+        setLights(PED_GREEN);
+        interval = 5000;
+      }
+      break;
+
+    case PED_GREEN:
+      if (currentMillis - previousMillis >= interval) {
+        state = PED_RED;
+        previousMillis = currentMillis;
+        setLights(PED_RED);
+        interval = 2000;
+      }
+      break;
+
+    case PED_RED:
+      if (currentMillis - previousMillis >= interval) {
+        state = CAR_GREEN;
+        previousMillis = currentMillis;
+        setLights(CAR_GREEN);
+        interval = 5000;
+      }
+      break;
+  }
+}
+
+// 🔹 Ultrasonic detection instead of button
+void checkUltrasonic() {
+  long duration;
+  int distance;
+
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  duration = pulseIn(echoPin, HIGH, 2500); // timeout 25ms
+  if (duration == 0) return;
+
+  distance = duration * 0.034 / 2;
+
+static unsigned long lastDetect = 0;
+
+if (distance > 0 && distance < DETECT_DISTANCE) {
+    if (millis() - lastDetect > 500) {  // debounce 0.5 sec
+        pedestrianRequest = true;
+        lastDetect = millis();
+    }
+}
+
+ 
+}
+
+void setLights(State s) {
+  switch (s) {
+      case CAR_YELLOW:
+      digitalWrite(cG, LOW);
+      digitalWrite(cY, HIGH);
+      digitalWrite(cR, LOW);
+      digitalWrite(pG, LOW);
+      digitalWrite(pR, HIGH);
+      break;
+   
+    case CAR_GREEN:
+      digitalWrite(cG, HIGH);
+      digitalWrite(cY, LOW);
+      digitalWrite(cR, LOW);
+      digitalWrite(pG, LOW);
+      digitalWrite(pR, HIGH);
+      break;
+
+
+    case CAR_RED:
+      digitalWrite(cG, LOW);
+      digitalWrite(cY, LOW);
+      digitalWrite(cR, HIGH);
+      digitalWrite(pG, LOW);
+      digitalWrite(pR, HIGH);
+      break;
+
+    case PED_GREEN:
+      digitalWrite(cG, LOW);
+      digitalWrite(cY, LOW);
+      digitalWrite(cR, HIGH);
+      digitalWrite(pG, HIGH);
+      digitalWrite(pR, LOW);
+      break;
+
+    case PED_RED:
+      digitalWrite(cG, LOW);
+      digitalWrite(cY, LOW);
+      digitalWrite(cR, HIGH);
+      digitalWrite(pG, LOW);
+      digitalWrite(pR, HIGH);
+      break;
+  }
+}
